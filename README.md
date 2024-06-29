@@ -2,7 +2,7 @@
 
 # VideoLLMs Experiment Setup
 
-This repository contains the setup and requirements for conducting VideoLLMs experiments using the state-of-the-art framework, Videollava~\cite{video-llava}.
+This repository contains the setup and requirements for conducting KeyVideoLLM.
 
 ## Installation
 
@@ -24,30 +24,28 @@ pip install scipy
 ```
 Alternatively, you can install all dependencies at once by using the requirements.txt file:
 
-Usage
-After installing the dependencies, you can proceed with your VideoLLMs experiments. The pre-trained CLIP model with a patch size of 32 will be used as the encoder for keyframe selection due to its superior performance in aligning visual and textual data.
+# VideoLLMs Experiments
 
-For detailed instructions on running experiments, please refer to the experiment scripts and documentation within the repository.
+## Installation and Setup
 
-需要的clip 模型:hf上下载clip-vit-base-patch32
-1、
-model/clip_baseline.py
-self.clip = CLIPModel.from_pretrained("/data/wentao/clip-vit-base-patch32/")
-2、inference.py
-tokenizer = CLIPTokenizer.from_pretrained("/data/wentao/clip-vit-base-patch32", TOKENIZERS_PARALLELISM=False)
+After installing the dependencies, you can proceed with your VideoLLMs experiments. We use the pre-trained CLIP model with a patch size of 32 as the encoder for keyframe selection due to its superior performance in aligning visual and textual data.
 
-需要修改的路径：
-1、输出的视频文件
-trainer/trainer.py
-dir='/mnt/share/video/video_dl_space/xpool_clip_keyframe/keyframe_clip_videos/videochatgpt_tune/'
+### Downloading the CLIP Model
 
-2、原视频路径、json文件路径、处理视频的个数，初次均匀抽帧的个数
-config/all_config.py
-parser.add_argument('--videos_dir', type=str, default="/data/wentao/lijp_data/video_llava_data/train_data/", help="Location of videos")
-parser.add_argument('--videos_json', type=str, default='/data/wentao/lijp_data/video_llava_data/train_data/train_json/videochatgpt_tune_.json', help="Location of videos") d
-#parser.add_argument('--msrvtt_train_file', type=str, default='9k')
-parser.add_argument('--videos_num_read', type=int, default=10) #处理的视频个数，-1为全部视频都处理!
-parser.add_argument('--num_frames', type=int, default=32) #初次抽帧数
+Before running the code, download the CLIP model from Hugging Face. Specifically, we use `clip-vit-base-patch32`, which can be downloaded from the following link: [clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32).
 
-执行代码：
-CUDA_VISIBLE_DEVICES=7 python inference.py --exp_name=exp_out  --videos_start=1000 --videos_end 1001 --batch_size=1 --huggingface --load_epoch=-1
+### Paths to Configure
+
+Ensure you are aware of the following paths and their purposes:
+
+- `--videos_dir`: Path to the directory containing the videos to be extracted.
+- `--videos_json`: Path to the JSON file containing `video_id`, `question`, and `output_video_id`.
+- `--output_dir`: Path where the extracted videos will be stored.
+- `--num_frames`: Number of coarse frames to extract.
+
+### Running the Code
+
+Below is an example command to run the inference:
+
+```bash
+CUDA_VISIBLE_DEVICES=7 python inference.py --exp_name=exp_out --videos_start=1000 --videos_end=1001 --batch_size=1 --huggingface --load_epoch=-1
